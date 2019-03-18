@@ -1,7 +1,7 @@
-#ifndef NODE
-#define NODE
-#include<stddef.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stddef.h>
 
 typedef struct node
 {
@@ -10,100 +10,105 @@ typedef struct node
 	unsigned short val;
 } Node;
 
-int num = 0;
+unsigned int len = 0;
 int i;
 
-void do_I(Node **head,size_t pos,unsigned short val){
-    printf("enter do_I suceed\n");
-    Node *cur = *head;
-    for( i = 0; i <= pos; i++){
-        if( i >= num){
-            if( cur == NULL){
-                printf("enter\n");
-                cur->val = val;
-                printf("1 safe\n");
-                cur->next = cur;
-                printf("2 safe\n");
-                cur->prev = cur;
-                printf("3 safe\n");
-                ++num;
-                printf("leave\n");
-            }
-            else{
-                printf("first enter\n");
-                Node *tmp = (Node*)malloc(sizeof(Node));
-                tmp->val = val;
-                cur->next = tmp;
-                tmp->prev = cur;
-                tmp->next = head;
-                (*head)->prev = tmp;
-                ++num;
-                printf("first out\n");
-            }
-            break;
+void do_I(Node **head,size_t pos,unsigned short val) {
+
+    Node *new = (Node *)malloc(sizeof(Node ));
+
+    new->val = val;
+
+    if(len == 0){
+        *head = new;
+        new->next = NULL;
+        new->prev = NULL;
+    }else{
+
+        Node *temp = *head;
+        if(pos >= len) {
+            while(temp->next != NULL ) temp = temp->next;
+            new->next = NULL;
+            new->prev = temp;
+            temp->next = new;
+            ++len;
+            return;
         }
-        else{
-            if( i != pos) cur = cur->next;
-            else{
-                Node *tmp = (Node*)malloc(sizeof(Node));
-                tmp->val = val;
-                tmp->prev = cur;
-                tmp->next = cur->next;
-                cur->next->prev = tmp;
-                cur->next = tmp;
-                ++num;
-            }
+//      go to the pos_th node
+        for(i = 0; i < pos; ++i) temp = temp->next;
+
+        if( temp == (*head) ) {
+            new->prev = NULL;
+            new->next = *head;
+            (*head)->prev = new;
+            (*head) = new;
+        } else {
+            new->prev = temp->prev;
+            new->next = temp;
+            temp->prev->next = new;
+            temp->prev = new;
         }
     }
-    printf("out of do_I\n");
+    len++;
+
 }
-void do_E(Node **head,size_t begin_pos,size_t end_pos){
-    printf("enter do_I suceed\n");
-    if( begin_pos == end_pos) return;
-    Node *cur = *head;
-    for( i = 0; i <= end_pos, i < num; i++){
-        if( i >= begin_pos){
-            Node *tmp = cur;
-            cur->prev->next = cur->next;
-            cur->next->prev = cur->prev;
-            cur = cur->next;
-            free(tmp);
-            --num;
-        }
-        else cur = cur->next;
+void do_E(Node **head,size_t begin_pos,size_t end_pos) {
+    if(len == 0) return;
+    if(end_pos >= len ) end_pos = len;
+    if(begin_pos >= len ) begin_pos = len;
+    if(begin_pos >= end_pos) return;
+
+    Node *start = *head;
+    Node *end = *head;
+    for(i = 0; i < begin_pos; ++i) start = start->next;
+    for(i = 0; i < end_pos; ++i) end = end->next;
+
+    if(start == *head){
+        *head = end;
+    }else if(end == NULL){
+        start->prev->next = NULL;
+    }else {
+        start->prev->next = end;
+        end->prev = start->prev;
     }
+
+    len -= (end_pos - begin_pos);
 }
 void do_P(Node  *head,size_t pos){
-    printf("enter do_I suceed\n");
-    if( pos >= num) return;
-    Node *cur = head;
-    for(i = 0; i <= pos; i++){
-        if( i !=  pos) cur = cur->next;
-        else    printf("%d ",cur->val);
-    }
+    Node *temp = head;
+    if(len == 0) return;
+    if(pos >= len) pos = len-1;
+    for(i = 0; i < pos; ++i) temp = temp->next;
+    if(temp != NULL) printf("%d ", temp->val);
 }
-void do_R(Node **head,unsigned short val){
-    printf("enter do_I suceed\n");
-    Node *cur = *head;
-    for( i = 0; i < num; i++){
-        if( cur->val == val ){
-            Node *tmp = cur;
-            cur->prev->next = cur->next;
-            cur->next->prev = cur->prev;
-            cur = cur->next;
-            free(tmp);
-            --num;
+void do_R(Node **head, unsigned short val) {
+    Node *temp = *head;
+    while( temp != NULL ) {
+        if( temp->val == val ) {
+            Node *d = temp;
+
+            if(temp == *head) *head = (*head)->next;
+            else temp->prev->next = temp->next;
+
+            if(temp->next == NULL) ;
+            else temp->next->prev = temp->prev;
+
+            temp = temp->next;
+            free(d);
+
+            --len;
+        }else{
+            temp = temp->next;
         }
+
     }
 }
-void do_S(Node  *head){
-    printf("enter do_I suceed\n");
-    Node *cur = head;
-    for( i = 0; i < num; i++){
-        printf("%d ",cur->val);
-        cur = cur->next;
+void do_S(Node  *head) {
+    if(head == NULL) return;
+
+    Node *temp = head;
+    while( temp != NULL ) {
+        printf("%d ", temp->val);
+        temp = temp->next;
     }
 }
-
-#endif
-

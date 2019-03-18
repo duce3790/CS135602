@@ -2,45 +2,45 @@
 #include"11349.h"
 
 
-void create_tree(Node** root, int n){
-    *root = (Node*)malloc(sizeof(Node));
-    int i, j, val;
-    Node *cur = *root;
-    for( i = 0; i < n; ++i){
-        scanf("%d",&val);
-        if( cur == NULL){
-            cur->data = val;
-            cur->left = NULL;
-            cur->right = NULL;
-        }
-        else{
-            for(;;){
-                if( val < cur->data){
-                    if( cur->left == NULL){
-                        Node *tmp = (Node*)malloc(sizeof(Node));
-                        tmp->data = val;
-                        cur->left = tmp;
-                        tmp->left = NULL;
-                        tmp->right = NULL;
-                        break;
-                    }
-                    cur = cur->left;
+void create_tree(Node **root, int n){
+    *root = (Node*) malloc(sizeof(Node));
+    (*root)->left = NULL;
+    (*root)->right = NULL;
+    int i, val;
+    Node *cur;
+    if (n == 0) {
+        return;
+    }
+    scanf("%d", &val);
+    (*root)->data = val;
+    for (i = 1; i < n; ++i) {
+        cur = *root;
+        scanf("%d", &val);
+        for(;;) {
+            if (val < cur->data) {
+                if ( cur->left == NULL) {
+                    cur->left = (Node*) malloc(sizeof(Node));
+                    cur->left->data = val;
+                    cur->left->left = NULL;
+                    cur->left->right = NULL;
+                    break;
                 }
-                else if( val > cur->data){
-                    if( cur->right == NULL){
-                        Node *tmp = (Node*)malloc(sizeof(Node));
-                        tmp->data = val;
-                        cur->right = tmp;
-                        tmp->left = NULL;
-                        tmp->right = NULL;
-                        break;
-                    }
-                    cur = cur->right;
+                cur = cur->left;
+            }
+            else if (val > cur->data) {
+                if (cur->right == NULL) {
+                    cur->right = (Node*) malloc(sizeof(Node));
+                    cur->right->data = val;
+                    cur->right->left = NULL;
+                    cur->right->right = NULL;
+                    break;
                 }
-                else break;
+                cur = cur->right;
+            }
+            else {
+                break;
             }
         }
-        cur = *root;
     }
 }
 
@@ -72,10 +72,7 @@ void print_tree(Node *root){
     preorder(root);
     printf("\ninorder:");
     inorder(root);
-    //system("pause");
-    printf("\nout from inorder");
     printf("\npostorder:");
     postorder(root);
-    printf("\nout from postorder\n");
 }
 
